@@ -1,0 +1,41 @@
+---
+title: "子チャンク:関数から呼び出す"
+author: "Nishida Norimitsu"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+
+<!-- 下のものを関数で呼び出す方法を考えます -->
+```{r}
+param_title <- "普通に書いて呼び出した"
+param_number <- 1500
+param_mean <- 100
+param_sd <- 0.1
+param_graphTitle <- "普通に書いて呼び出した"
+```
+
+```{r child="child2.Rmd"}
+```
+
+
+```{r ,include=FALSE}
+param_title <- "関数で呼び出した"
+param_number <- 1500
+param_mean <- 100
+param_sd <- 0.1
+param_graphTitle <- "関数で呼び出した"
+
+result_string <- knitr::knit_child("child2.Rmd")
+```
+
+```{r, results="asis"}
+cat(result_string)
+```
+
+では、次の動画では、このやり方でループ処理をすることを説明します！もう少しです！
+

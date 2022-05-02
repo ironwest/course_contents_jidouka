@@ -1,0 +1,58 @@
+---
+title: "子チャンク:mapの机を作ろう！"
+author: "Nishida Norimitsu"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+<!-- 一つ前の動画で、environmentについて、机のイメージで解説しました。 -->
+<!-- ここでは、knit_child関数に対して、どの机を探すかを指定する方法 -->
+<!-- について解説を行います。 -->
+
+## mapによるスライド生成
+
+```{r include=FALSE}
+mapres <- map_chr(1:10, ~{
+  mapenv <- new.env() #map中の机を作成
+  
+  assign("param_title"     , ., envir = mapenv) #param_title <- .
+# このassign関数は、
+  # param_title <- . 
+  # を新しく作ったmapenvで実行します。
+  assign("param_number"    , ., envir = mapenv)
+  assign("param_mean"      , ., envir = mapenv)
+  assign("param_sd"        , ., envir = mapenv)
+  assign("param_graphTitle", ., envir = mapenv)
+  
+  return(knitr::knit_child("child2.Rmd", envir = mapenv))
+})
+```
+
+```{r, results="asis"}
+cat(mapres, sep="\n")
+```
+
+
+## どうでしょう？
+
+無事にmap内で設定した変数を利用して  
+knit_childが呼び出したRmdファイルが実行されていますね？  
+forループでも十分対応できる話でしたが  
+環境について簡単に説明したかったので  
+ここで説明させていただきました  
+
+## パラメーターを利用する
+
+このコースで紹介した方法以外にも、パラメーターというものを渡す手もあります。
+興味がある方は調べてみてください。
+
+## お疲れさまでした！
+
+長い基本的な話をよく最後まで聞いていただきました。
+それでは、スライドをループ生成したいというところから  
+はじまった、大本の部分に立ち返り  
+スライドを生成してみましょう。

@@ -1,0 +1,45 @@
+---
+title: "子チャンク:複数の描画＋内容への影響"
+author: "Nishida Norimitsu"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+## 子チャンクの内容に影響を与える
+
+子Rmdファイルは、実は親の環境で評価されます。  
+ですので、親の環境にある変数が影響を与えるように子Rmdファイルの中身を編集しておけば、基本的には問題なく実行されます  
+やってみましょう  
+
+```{r}
+param_title <- "新しいタイトル"
+param_number <- 500
+param_mean <- 10
+param_sd <- 30
+param_graphTitle <- "グラフのタイトル"
+```
+
+
+```{r warning=FALSE, child="child2.Rmd"}
+```
+
+
+```{r}
+param_title <- "全然違うタイトル"
+param_number <- 1500
+param_mean <- 100
+param_sd <- 0.1
+param_graphTitle <- "グラフのタイトルその2"
+```
+
+```{r warning=FALSE, child="child2.Rmd"}
+```
+
+
+## どうでしょうか？
+
+こんな感じで、子Rmdファイルの内容に親Rmdファイルから影響を与えることができました。ただ、この方法だけでは、うまくループで呼び出せないので、次では、少し方法を変えて描画する方法をご説明いたします。

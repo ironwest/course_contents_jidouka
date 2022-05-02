@@ -1,0 +1,19 @@
+---
+title: "06-02スライドのコンテンツ:補足:ノート"
+author: "Nishida Norimitsu"
+date: "2019/9/2"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## ノートの追加
+
+スライドのコンテンツ以外にも、
+
+::: notes
+ノート部分に記載を入れることも可能です。じｓｄふぃおあｓｄｈｆぎおあｓｇひおしゃｄｇさｄ
+ｄｓふぁｓｄｇｆｓｄｇさｄがあｓｄｇ
+:::

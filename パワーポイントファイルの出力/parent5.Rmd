@@ -1,0 +1,79 @@
+---
+title: "子チャンク:ループでの呼び出し"
+author: "Nishida Norimitsu"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+<!-- したのものをループで処理して、多数のresult_stringを作成して、それを最後に描画するという作戦でいきましょう。 -->
+
+```{r ,include=FALSE}
+param_title <- "関数で呼び出した"
+param_number <- 1500
+param_mean <- 100
+param_sd <- 0.1
+param_graphTitle <- "関数で呼び出した"
+
+result_string <- knitr::knit_child("child2.Rmd")
+```
+
+```{r, results="asis"}
+cat(result_string)
+```
+
+## forループによるスライド生成
+
+```{r,include=FALSE}
+output_string <- c()
+for(i in 1:10){
+  param_title <- str_glue("forから呼び出し:{i}")
+  param_number <- i * 100
+  param_mean <- i
+  param_sd <- i
+  param_graphTitle <- i
+  
+  aChunk <- knitr::knit_child("child2.Rmd")
+  output_string <- c(output_string, aChunk)
+}
+```
+
+```{r, results="asis"}
+cat(output_string, sep = "\n")
+```
+
+## mapによるスライド生成
+
+```{r}
+param_title <- "mapの外で設定されました！"
+param_number <- 1
+param_mean <- 1
+param_sd <- 1
+param_graphTitle <- "mapの外で設定されました！"
+```
+
+```{r include=FALSE}
+mapres <- map_chr(1:10, ~{
+  param_title <- .
+  param_number <- .
+  param_mean <- .
+  param_sd <- .
+  param_graphTitle <- .
+  
+  return(０knitr::knit_child("child2.Rmd"))
+})
+```
+
+```{r, results="asis"}
+cat(mapres, sep="\n")
+```
+
+## !?
+
+forループでは問題なく描画できましたが  
+mapではなぜか、mapの中で設定したものではなく  
+mapの外で設定したものが描画されています  
+次の動画ではなぜこの現象がおこるか、スライドでの説明を行います  

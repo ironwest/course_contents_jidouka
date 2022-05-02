@@ -1,0 +1,61 @@
+---
+title: "06スライドのコンテンツ:図"
+author: "Nishida Norimitsu"
+date: "2019/9/2"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## 図
+
+グラフ以外の図を貼り付けたい場合は、
+<!-- ![キャプション](ファイルへのパス) -->
+という記載方法となります
+
+## 図
+
+![test picture](test.png)
+やはりここでも、図と文章は同じページには保存されません
+なので、表と同じ作戦で統一ページに説明文をのせます
+
+
+## 図と文章
+
+<div class="columns">
+
+<div class="column">
+
+![test picture](test.png)
+
+</div>
+
+<div class="column">
+
+これで同じスライド内に文章を表示できました
+
+</div>
+
+</div>
+
+
+## 図と文章
+
+:::::: {.columns}
+
+::: {.column}
+
+![test picture](test.png)
+
+:::
+
+::: {.column}
+
+表とまったく一緒ですね
+
+:::
+
+:::::::::::::
+

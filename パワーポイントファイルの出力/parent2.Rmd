@@ -1,0 +1,34 @@
+---
+title: "子チャンク:複数の描画"
+author: "Nishida Norimitsu"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+## 子チャンクを複数回呼び出す
+
+ここでは、子チャンクが複数回呼び出せるということを確認しておきましょう。
+
+
+```{r warning=FALSE, child="child.Rmd"}
+```
+
+```{r warning=FALSE, child="child.Rmd"}
+```
+
+```{r warning=FALSE, child="child.Rmd"}
+```
+
+```{r warning=FALSE, child="child.Rmd"}
+```
+
+## 子Rmdは4回呼び出された！　
+
+簡単ですね？
+
+次からは呼び出す子チャンクの内容を変更する方法について  
+説明していきます。

@@ -1,0 +1,26 @@
+---
+title: "07スライドのコンテンツ:Rチャンク"
+author: "Nishida Norimitsu"
+date: "2019/9/2"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+<!-- まずは、child.Rmdというファイルを確認しましょう。 -->
+<!-- (もちろん、ご自身で作ってもらっても構いません) -->
+
+## これは親の内容です
+
+* ここも親の記載です。
+
+```{r warning=FALSE, child="child.Rmd"}
+#これがchildチャンクです。
+```
+
+## これはChildの後の親の記載です
+
+* ここもChildの後の親の記載です

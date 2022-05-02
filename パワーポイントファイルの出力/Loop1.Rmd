@@ -1,0 +1,79 @@
+---
+title: "ループ生成"
+author: "Nishida Norimitsu"
+date: "2019/9/2"
+output: powerpoint_presentation
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<!--
+## ループ生成の必要性
+
+あまり多量のグラフや表が出力されることは好ましいことではありませんが、
+
+大量のグラフや表をループ処理して出力したいケースがあります
+
+その場合に、いくつかやり方が考えられます
+
+## やり方
+
+1. Rmarkdownのスクリプトを生成する関数を作成する
+1. Child Chunkを作ってループする
+
+ここでは、スクリプトを生成する方法をまず考えてみましょう。
+--> 
+
+```{r}
+#アルファベット毎に１から20のどれかの数字を設定
+dat <- tibble(type = LETTERS) %>% 
+  mutate(repeats = sample(1:20, 26, replace=TRUE))
+
+#ここでは、
+#　タイトルにアルファベット
+#　本文にランダムに設定された数字記載する
+#　
+#　スライドを自動生成することを考えましょう
+```
+
+<!-- 基本的なスライドは、 -->
+
+## アルファベット
+
+* ランダムな数字
+
+<!-- となります -->
+
+```{r, include = FALSE}
+#基本的なスライドをスクリプトで描画する方法は、
+random_number <- runif(1, 1,26) %>% round(0) %>% format()
+random_alphabet <- sample(LETTERS, 1)
+
+slide_title  <- str_glue("## {random_alphabet}")
+slide_honbun <- str_glue("* {random_number}(変数に入っている数字！)")
+
+#という変数があったとして、チャンクの中で表示した文字列を、チャンクの外の文章としてRmarkdownに認識させることができれば、自由にスクリプトによる描画が可能となります。
+#次のチャンクでそれを実現する方法をお示しします。
+```
+
+```{r, results="asis"}
+cat(slide_title,"\n")
+cat("\n")
+cat(slide_honbun)
+```
+
+<!-- ではKnitしてみましょう! -->
+
+<!-- ここでやっていることで新しいことが一つあります。 -->
+<!-- それは、チャンクオプションとよばれるもののうち、resultsというオプションに”asis”という設定をしていることです。 -->
+
+<!-- このresults="asis"が設定されていると、RmarkdownをKnitする場合にcatで印字されるテキストがあたかも、素のRmdに記載されている文字列のように扱われます。結果(results)があるがまま(asis)評価される形です。 -->
+
+<!-- results=asisを外して再度実行してみるとその差は歴然ですね？ -->
+
+<!-- そのため、今回のようにプログラム的に印字するようなことが簡単にできるのです。次の動画では、実際にアルファベットの数だけスライドを生成してみましょう。 -->

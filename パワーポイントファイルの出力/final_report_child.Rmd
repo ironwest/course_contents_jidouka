@@ -1,0 +1,32 @@
+```{r, results="asis"}
+cat(str_glue("## {child_title}"))
+```
+
+:::::: {.columns}
+
+::: {.column}
+
+```{r}
+generate_plot_income(child_ka, child_dat, child_admout)
+```
+
+:::
+
+::: {.column}
+
+```{r}
+generate_hyou_income(child_ka, child_dat, child_admout) %>% knitr::kable()
+```
+
+:::
+
+::::::
+
+```{r, results="asis"}
+cat(str_glue("## {child_title}科:重回帰分析結果"))
+```
+
+```{r}
+generate_lmresult(child_ka, child_dat, child_admout) %>% knitr::kable()
+```
+

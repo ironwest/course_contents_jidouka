@@ -1,0 +1,28 @@
+```{r, results='asis'}
+cat(str_glue("## {param_title}"))
+```
+
+
+:::::: {.columns}
+
+::: {.column}
+* 先に紹介した直接書く方法でも
+* この表現は可能ですが、
+* Childを設定して描画することで
+* より直接的に編集することが可能となります。
+:::
+
+::: {.column}
+
+```{r message=FALSE, warning=FALSE}
+gg <- tibble(val = rnorm(param_number,param_mean,param_sd)) %>% 
+  ggplot() +
+  geom_histogram(aes(x = val)) +
+  labs(title = param_graphTitle)
+
+print(gg)
+```
+
+:::
+
+::::::

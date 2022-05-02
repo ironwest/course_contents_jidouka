@@ -1,0 +1,118 @@
+---
+title: "検査結果月次レポート_未加工"
+author: "Nishida Norimitsu"
+date: "2019/8/31"
+output: powerpoint_presentation
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+
+library(tidyverse)
+library(cowplot)
+theme_set(theme_cowplot())
+
+dat <- readxl::read_excel("lecture_data.xlsx")
+
+dat <- dat %>% 
+  mutate(adm_out = factor(adm_out,
+                          levels = c("adm","out"),
+                          labels = c("入院","外来"))) %>% 
+  mutate(gender = factor(gender,
+                         levels = c("male","female"),
+                         labels = c("男性","女性"))) %>% 
+  mutate(income = as.numeric(income))
+```
+
+## 受診人数
+
+:::::: {.columns}
+
+::: {.column}
+```{r}
+ggplot(dat) +
+  geom_bar(aes(x = ka_name, fill=adm_out), position="dodge") +
+  scale_fill_discrete(name = "入院/退院") +
+  labs(x = "診療科", y = "人数")
+```
+:::
+
+::: {.column}
+```{r}
+dat %>% 
+  count(ka_name, adm_out) %>% 
+  spread(adm_out, n, fill = 0) %>% 
+  knitr::kable()
+```
+:::
+
+::::::
+
+## 受診人数(年齢と性別)
+
+```{r}
+ggplot(dat) +
+  geom_boxplot(aes(x = ka_name, y = age, color = gender)) +
+  scale_color_discrete(name = "性別") +
+  labs(x = "診療科", y = "年齢") +
+  facet_wrap(~adm_out)
+  
+```
+
+```{r}
+generate_plot_income <- function(ka, dat, admOrOut){
+  
+  dat <- dat %>% 
+    filter(ka_name == ka) %>% 
+    filter(adm_out == admOrOut)
+  
+  ggplot(dat) +
+    geom_point(aes(x = age, 
+                   y = income, 
+                   shape = gender) ) +
+    scale_shape_discrete(name = "性別") +
+    labs(x = "年齢", y = "収入")
+}
+```
+
+## A科入院:年齢別収入
+
+```{r}
+generate_plot_income("A",dat,"入院")
+```
+
+## B科入院:年齢別収入
+
+```{r}
+generate_plot_income("B",dat,"入院")
+```
+
+
+## 略
+
+　中略
+
+## J科入院:年齢別収入
+
+```{r}
+generate_plot_income("J",dat,"入院")
+```
+
+## 基本の終了
+
+どうでしょうか？ 
+
+基本的なグラフの描画と表の挿入で定型のパワーポイントを生成することが何とかなりそうな気がしてきませんか？  
+
+医療職を対象としいる本コースですが「データ」に医療や会計などの分類はありません。  
+
+特に病院や企業の経理などで、毎月必ず同じPPTを作成している人がいたら、一度、決まった形のデータを読み込んだらグラフや表を自動生成するこの仕組みは役に立つと思います。
+
+次の動画では、このスライドで「中略」となっている部分を自動生成する方法を考えていきます。
+

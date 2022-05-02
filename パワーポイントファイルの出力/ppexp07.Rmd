@@ -1,0 +1,113 @@
+---
+title: "07スライドのコンテンツ:Rチャンク"
+author: "Nishida Norimitsu"
+date: "2019/9/2"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+## Rのスクリプトの内容を描画する
+
+さて、やっとですが「R」markdownの話に入っていきます。
+
+Rのコードを実行した結果を直接埋め込むことができるのがRmarkdownの最大のメリットです。
+
+例えば、計算結果を表示したりもできます
+
+```{r}
+1 + 2 + 3
+```
+
+ちなみに、コードチャンクという名前でこれは呼ばれていますが、ctrl + alt + i と入力することで自動挿入できます。
+
+
+
+## グラフの表示
+
+::::: {.columns}
+
+::: {.column}
+
+```{r}
+dat <- diamonds %>% slice(1:1000)
+
+ggplot(dat) +
+  geom_point(aes(x = carat, y = price, color = color)) +
+  labs(x = "カラット", y = "値段")
+  
+```
+
+:::
+
+::: {.column}
+
+グラフを描画できます
+
+:::
+
+::::::
+
+## 表の描画
+
+```{r}
+hyou <- dat %>% 
+  count(cut, clarity) %>% 
+  spread(cut,n, fill= 0)
+
+hyou
+```
+
+::: notes
+hyouとだけ記載した場合の描画です
+:::
+
+## 表の描画2
+
+```{r}
+knitr::kable(hyou)
+```
+
+::: notes
+knitr::kable(hyou)の場合です。こちらを多用することになります。
+:::
+
+## 計算結果の埋め込み
+
+```{r, include=FALSE}
+#include = FALSEとすることで、計算は行われますが、その結果はパワーポイントには直接反映されません。なので、このチャンク内で、
+
+sum1to100 <- sum(1:100)
+mean1to100 <- mean(1:100)
+sumsquare1to100 <- sum( (1:100)^2 )
+meansquare1to100 <- mean( (1:100)^2 )
+
+#こんな感じの変数を作成して
+```
+
+1から100までの数字を
+
+* 全部足すとその結果は`r sum1to100`になります。
+* 平均をとると、それは`r mean1to100`となります
+* 全てを二乗した場合の
+  * 和は`r sumsquare1to100`です
+  * 関数を使って、形を整えると、`r format(sumsquare1to100)`
+  * 平均は`r meansquare1to100`
+  
+結果がうめこまれているでしょう？
+
+## チャンクのオプション
+
+```{r}
+#いろいろと設定をいじることもできるので試してみてください。
+```
+
+
+## 以上！
+
+簡単にですが、Rmarkdownでのパワーポイント作成についての基本的な解説を行いました。
+ここまでの知識を利用すれば、自動的にパワーポイントを描画することができるはずです。
+次の動画では、最終的に達成したい形のレポートをご提示いたします

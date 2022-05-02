@@ -1,0 +1,195 @@
+---
+title: "検査結果月次レポート_ループ"
+author: "Nishida Norimitsu"
+date: "2019/8/31"
+output: powerpoint_presentation
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+
+library(tidyverse)
+library(cowplot)
+theme_set(theme_cowplot())
+
+dat <- readxl::read_excel("lecture_data.xlsx")
+
+dat <- dat %>% 
+  mutate(adm_out = factor(adm_out,
+                          levels = c("adm","out"),
+                          labels = c("入院","外来"))) %>% 
+  mutate(gender = factor(gender,
+                         levels = c("male","female"),
+                         labels = c("男性","女性"))) %>% 
+  mutate(income = as.numeric(income))
+
+#datはこんな感じです。
+#ここで、因子型にしておくと、グラフの見栄えがよくなるのでそうしています。
+```
+
+## 受診人数
+
+:::::: {.columns}
+
+::: {.column}
+```{r}
+ggplot(dat) +
+  geom_bar(aes(x = ka_name, fill=adm_out), position="dodge") +
+  scale_fill_discrete(name = "入院/退院") +
+  labs(x = "診療科", y = "人数")
+
+#このグラフは診療科別に、入院/外来のデータが何件(人)いるかというものです
+```
+:::
+
+::: {.column}
+```{r}
+dat %>% 
+  count(ka_name, adm_out) %>% 
+  spread(adm_out, n, fill = 0) %>% 
+  knitr::kable()
+#count関数を利用することで、分類に分けて集計できます。
+#その後、Spread関数で広げてあげることでこんな表が出来上がります。
+```
+:::
+
+::::::
+
+## 年齢の分布(科と性別別)
+
+```{r}
+ggplot(dat) +
+  geom_boxplot(aes(x = ka_name, y = age, color = gender)) +
+  scale_color_discrete(name = "性別") +
+  labs(x = "診療科", y = "年齢") +
+  facet_wrap(~adm_out)
+
+#これは少し複雑ですが、
+#　・X軸に科
+#　・Y軸に年齢
+#　・Facetとして入院外来　をつけた、年齢分布のボックスプロットです。  
+```
+
+```{r}
+# ここで定義した関数はmapの中やChildの中からも参照可能です。
+# 同じようなグラフを描くことが多い場合はこのような関数にして
+# おいてもよいでしょう
+
+generate_plot_income <- function(ka, dat, admOrOut){
+  
+  dat <- dat %>% 
+    filter(ka_name == ka) %>% 
+    filter(adm_out == admOrOut)
+  
+  ggplot(dat) +
+    geom_point(aes(x = age, 
+                   y = income, 
+                   shape = gender) ) +
+    scale_shape_discrete(name = "性別") +
+    labs(x = "年齢", y = "収入", title = str_glue("{admOrOut}の収入散布図"))
+}
+
+#generate_plot_income("B", dat, "入院")
+
+generate_hyou_income <- function(ka, dat, admOrOut){
+  
+  dat <- dat %>% 
+    filter(ka_name == ka) %>% 
+    filter(adm_out == admOrOut)
+  
+  dat <- dat %>% 
+    mutate(income_cat = cut(income, 
+                            breaks = c(-1, 10000, 20000, 30000, Inf),
+                            labels = c("<1万","1-2万","2-3万",">=3万")))
+  
+  hyou <- dat %>% count(income_cat) %>% 
+    rename(`分類` = income_cat, `件数` = n)
+  
+  return(hyou)
+}
+
+#generate_hyou_income("B", dat, "入院")
+generate_lmresult <- function(ka, dat, admOrOut){
+  
+  dat <- dat %>% 
+    filter(ka_name == ka) %>% 
+    filter(adm_out == admOrOut)
+  
+  mod <- lm(formula = "income ~ age + gender", data = dat)
+  
+  #一応、ここで利用しているbroom関数はこれまで詳しく説明していませんが、broom::tidyで重回帰分析など、モデルを入れると、結果を見やすい形のtibbleで返してくれます。
+#他、stargazerパッケージなど、いろいろ便利なパッケージがありますので、興味のある方は探してみてください。
+
+  table <- broom::tidy(mod) %>% 
+    mutate_at(vars(-term), ~{
+      round(.,2)
+    }) %>% 
+    rename(
+      `項目`     = term,
+      `係数`     = estimate,
+      `標準誤差` = std.error,
+      `t値` = statistic,
+      `p値` = p.value
+    )
+
+　return(table)
+}
+
+#generate_lmresult("C",dat,"入院")
+```
+
+## 入院患者の収入分析(直接記述を利用)
+
+```{r, results="asis"}
+walk( c(LETTERS[1:10]), ~{
+  cat(str_glue("## {.}科入院図表"))
+  cat("\n\n")
+  cat(":::::: {.columns}")
+  cat("\n\n")
+  cat("::: {.column}")
+  cat("\n\n")
+  plot(generate_plot_income(.,dat,'入院'))
+  cat("\n\n")
+  cat(":::")
+  cat("\n\n")
+  cat("::: {.column}")
+  cat("\n\n")
+  print(knitr::kable(generate_hyou_income(.,dat,'入院')))
+  cat("\n\n")
+  cat(":::")
+  cat("\n\n")
+  cat("::::::")
+  cat("\n\n")
+  cat(str_glue("## {.}科入院:重回帰分析"))
+  cat("\n\n")
+  print(knitr::kable(generate_lmresult(.,dat,"入院")))
+  cat("\n\n")
+} )
+```
+
+## 外来患者の収入分析(Childを利用)
+
+```{r, include=FALSE}
+res_str <- map_chr( LETTERS[1:10] , ~{
+  title <- str_c("外来:", .)
+  mapenv <- new.env()
+  assign("child_title" , title , envir = mapenv)
+  assign("child_ka"    , .     , envir = mapenv)
+  assign("child_dat"   , dat   , envir = mapenv)
+  assign("child_admout", "外来", envir = mapenv)
+  
+  knitr::knit_child("final_report_child.Rmd", envir = mapenv)
+})
+
+```
+
+```{r, results="asis"}
+cat(res_str, sep = "\n")
+```
+

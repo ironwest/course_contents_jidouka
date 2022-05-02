@@ -1,0 +1,70 @@
+---
+title: "ループ生成4"
+author: "Nishida Norimitsu"
+date: "2019/9/2"
+output: powerpoint_presentation
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(cowplot)
+theme_set(theme_cowplot())
+
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+では、グラフを描画できるかを見ていきます。
+
+```{r}
+#アルファベット毎に１から20のどれかの数字を設定
+dat <- tibble(type = LETTERS) %>% 
+  mutate(repeats = sample(1:20, 26, replace=TRUE))
+```
+
+## 出力するグラフ
+
+```{r}
+adat <- dat %>% slice(1)
+
+gg <- ggplot(adat) + geom_col(aes(x = type, y = repeats), fill = "skyblue")
+
+gg
+```
+
+## forで出力
+```{r, results = "asis"}
+for(i in 1:10){
+  adat <- dat %>% slice(i)
+  gg <- ggplot(adat) + geom_col(aes(x = type, y = repeats), fill = "skyblue")
+  
+  cat("## graph")
+  cat("\n\n")
+  print(gg)
+  cat("\n\n")
+}
+
+```
+
+
+## Walk で出力
+
+```{r, results="asis"}
+walk(1:10, ~{
+  i <- .
+  adat <- dat %>% slice(i)
+  gg <- ggplot(adat) + geom_col(aes(x = type, y = repeats), fill = "skyblue")
+  
+  cat("## graph")
+  cat("\n\n")
+  print(gg)
+  cat("\n\n")
+})
+```
+
+
+-----
+print(gg)でグラフを描画するだけでその部分にグラフが挿入された形で処理されます。
+
+次はテーブルの挿入方法について考えましょう

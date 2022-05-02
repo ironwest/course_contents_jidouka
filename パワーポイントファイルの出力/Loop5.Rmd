@@ -1,0 +1,74 @@
+---
+title: "ループ生成5"
+author: "Nishida Norimitsu"
+date: "2019/9/2"
+output: powerpoint_presentation
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(cowplot)
+theme_set(theme_cowplot())
+
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+ここからは表を描画できるかを見ていきます。
+
+```{r}
+#アルファベット毎に１から20のどれかの数字を設定
+dat <- tibble(type = LETTERS) %>% 
+  mutate(repeats = sample(1:20, 26, replace=TRUE))
+```
+
+## 出力する表
+
+```{r}
+adat <- dat %>% slice(1)
+
+knitr::kable(adat)
+```
+
+## forで出力
+```{r, results = "asis"}
+for(i in 1:10){
+  adat <- dat %>% slice(i)
+  
+  cat("## hyou")
+  cat("\n\n")
+  print(knitr::kable(adat))
+  cat("\n\n")
+}
+
+```
+
+
+## Walk で出力
+
+```{r, results="asis"}
+walk(1:10, ~{
+  i <- .
+  adat <- dat %>% slice(i)
+  
+  cat("## hyou")
+  cat("\n\n")
+  print(knitr::kable(adat))
+  cat("\n\n")
+})
+```
+
+
+-----
+表も、グラフと同様にPrinｔ関数にいれて実行することでうまく行きました。
+
+これで、
+
+* 素のマークダウンの挿入
+* 図の挿入
+* 表の挿入
+
+がforループやwalkを利用して生成できるようになったはずです
+
+次はより複雑なものを挿入したい場合に役立つChild Chunkについての解説を行います。
